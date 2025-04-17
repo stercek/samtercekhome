@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="index, follow">
+  <title>Sam Tercek</title>
+  <meta name="keywords" content="Sam, product design, UI/UX, Spotify, interactive portfolio, design leader, team management, storytelling">
+
+  <!-- I'm Sam, a design leader with a focus on creative teams, clear stories, and meaningful interaction. This site is a glimpse into how I work. -->
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: white;
+      font-family: 'IBM Plex Mono', monospace;
+      color: black;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: white;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .page-label {
+      position: absolute;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: #333;
+      opacity: 0.85;
+      z-index: 2;
+    }
+    #content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 1;
+      max-width: 90vw;
+    }
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 400;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    h1.loaded {
+      opacity: 1;
+    }
+    h1.glitchy {
+      animation: glitch 2.5s infinite ease-in-out;
+    }
+    .site-footer {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      font-size: 0.75rem;
+      color: #666;
+      opacity: 0.8;
+      z-index: 2;
+      text-align: right;
+      line-height: 1.4;
+    }
+    .site-footer a {
+      color: #444;
+      text-decoration: underline;
+    }
+    .site-footer a:hover {
+      color: black;
+    }
+    @keyframes glitch {
+      0%, 100% { opacity: 1; transform: none; }
+      20% { opacity: 0.85; transform: translate(-1px, 1px); }
+      40% { opacity: 1; transform: translate(1px, -0.5px); }
+      60% { opacity: 0.9; transform: translate(-0.5px, 1px); }
+      80% { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div style="display:none;">
+  I'm Sam, a design leader focused on building effective teams, telling clear stories, and crafting kickass human-first experiences.
+</div>
+  <canvas id="canvas"></canvas>
+  <div class="page-label">interfering gently</div>
+  <div id="content">
+    <h1 id="headline">Loading a glitchy little fact...</h1>
+  </div>
+  <footer class="site-footer">
+    Hi, I'm Sam, a designer and team leader. </br> I made this site with help from a robot that writes code. 
+    <a href="source.zip" download>Help me make it better -> here's the code.</a>
+  </footer>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    const shapeTypes = ['circle', 'square', 'triangle'];
+    const grayShades = [
+      'rgba(0,0,0,1)','rgba(50,50,50,1)','rgba(100,100,100,1)',
+      'rgba(150,150,150,1)','rgba(200,200,200,1)'
+    ];
+    class Shape {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.pow(Math.random(), 1.5) * 780 + 20;
+        this.dx = (Math.random() - 0.5) * 0.4;
+        this.dy = (Math.random() - 0.5) * 0.4;
+        this.type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        this.color = grayShades[Math.floor(Math.random() * grayShades.length)];
+        this.fill = Math.random() > 0.85;
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.beginPath();
+        if (this.type === 'circle') {
+          ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+        } else if (this.type === 'square') {
+          ctx.rect(-this.size / 2, -this.size / 2, this.size, this.size);
+        } else if (this.type === 'triangle') {
+          ctx.moveTo(0, -this.size / 2);
+          ctx.lineTo(this.size / 2, this.size / 2);
+          ctx.lineTo(-this.size / 2, this.size / 2);
+          ctx.closePath();
+        }
+        if (this.fill) {
+          ctx.fillStyle = this.color;
+          ctx.fill();
+        } else {
+          ctx.strokeStyle = this.color;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        if (this.x < 0 || this.x > canvas.width) this.dx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.dy *= -1;
+        this.draw();
+      }
+    }
+    const shapes = [];
+    for (let i = 0; i < 30; i++) {
+      shapes.push(new Shape());
+    }
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      shapes.forEach(shape => shape.update());
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+  <script>
+    const facts = ["Ancient Persians reportedly used horseback relays so effective that, in Herodotus’s words, 'neither snow, nor rain, nor heat, nor gloom of night' could stop them.", 'Pneumatic tube systems were once the backbone of communication in major cities — whooshing notes beneath the streets from office to office.', 'In feudal Japan, signal fires were used not only for military warnings, but to announce new laws or imperial decrees from mountaintops.', "Wartime 'wig-wag' flag signaling used a binary system — one position for dots, one for dashes — essentially human Morse code from hilltops and trenches.", 'Some Western Union telegraph offices had typists who could send 60 words a minute — a speed that outpaced early telephone operators.', "Some telegraph operators claimed they could 'hear' the style of individual senders — recognizing friends by their rhythm, like an auditory signature.", "Before modern encryption, sensitive telegrams were sent with codebooks. A phrase like 'gold shipment' might be encoded as 'umbrella dance.'", 'The heliograph could transmit Morse code up to 50 miles on a clear day. British forces used it well into the 20th century, long after radio existed.', 'Ancient Chinese generals used drums and gongs to coordinate battlefield maneuvers, with different rhythms for advance, retreat, and regroup.', 'The Pony Express used relay riders, switching horses every 10 miles. A letter could travel 1,800 miles in just 10 days — faster than anything before it in the American West.', 'Carrier pigeons were so valuable that military personnel could be court-martialed for harming one — even accidentally.', "The word 'telegraph' means 'writing at a distance' — but early systems didn’t write anything. They clicked, flashed, or flapped their meaning.", 'In the 1890s, people in London could send a telegraph across the city in minutes. Telegram boys on bicycles were once as common as mail carriers.', 'The Inca didn’t have writing, but their communication system was advanced: quipu knots, color coding, and a fully trained network of messengers.', 'Morse code was once considered an art form — veteran operators competed in speed, accuracy, and flair.', 'The Baudot code, invented in 1870, used five-bit binary to encode characters for telegraphy. It became the spiritual ancestor of ASCII, and later, the internet.', 'Talking drums in West Africa could replicate the pitch and rhythm of spoken language. Messages that would take hours to walk could reach villages miles away in minutes.', 'The Great Fire of Chicago in 1871 was first reported to the East Coast via telegraph. The story arrived before the flames had even been put out.', 'Early telegraph messages were short and cryptic — not because of style, but because messages were charged by the word. Concise language became an economic necessity.', 'In 19th-century Paris, semaphore towers sometimes relayed gossip faster than newspapers — they weren’t just for military dispatches.', "The term 'telegram' wasn’t coined until years after the technology existed. For a while, people just called it 'the wire' or 'the instrument.'", "To prevent errors, early telegraph operators ended messages with '30' — short for 'end of transmission.' That’s why journalists still use it.", 'Long before fiber optics, ancient armies relied on synchronized fire beacons. Each flame was part of a sequence — light one, and the next hill lit theirs. Communication, by chain reaction.', 'During WWI, homing pigeons carried messages in tiny capsules attached to their legs — one even carried a film negative across enemy lines.', "Smoke signals weren’t just puffs of smoke — they followed precise grammar to encode identity, urgency, and purpose. A rising spiral might mean 'all is well.' A broken column? A call to arms.", 'Carrier pigeons were so reliable in World War I that when radios failed, a bird named Cher Ami flew through gunfire to deliver a message that saved nearly 200 soldiers.', 'The Pony Express used relay riders, switching horses every 10 miles. A letter could travel 1,800 miles in just 10 days — faster than anything before it in the American West.', 'Telegraph wires across the American prairie hummed in the wind — literally. Travelers claimed you could hear messages in the breeze.', 'Early long-distance communications often failed — fog stopped optical signals, storms grounded pigeons, and cold silenced drums.', "Before modern encryption, sensitive telegrams were sent with codebooks. A phrase like 'gold shipment' might be encoded as 'umbrella dance.'", 'During WWI, homing pigeons carried messages in tiny capsules attached to their legs — one even carried a film negative across enemy lines.', 'Carrier pigeons were so reliable in World War I that when radios failed, a bird named Cher Ami flew through gunfire to deliver a message that saved nearly 200 soldiers.', 'In feudal Japan, signal fires were used not only for military warnings, but to announce new laws or imperial decrees from mountaintops.', 'Flag semaphore is still taught by navies today — just in case all electronic comms go down.', 'By the 1930s, New York City’s pneumatic mail system had over 30 miles of tubing, delivering messages faster than human couriers could navigate above ground.', 'In ancient Greece, a network of fire beacons helped deliver news of the fall of Troy — likely the earliest form of rapid broadcast communication.', 'The first Morse code message over wire, sent in 1844, was 19 characters long. It took over a decade before people trusted the tech.', 'In the 1860s, a telegraph line was laid through the Alaskan wilderness. Operators lived in isolated huts, sometimes for weeks, waiting for a signal that might never come.', 'A 19th-century prankster once hijacked a semaphore line by inserting a fake message mid-route. The result? Total confusion at military headquarters.', 'In Victorian London, you could send someone a telegram and have a reply the same afternoon — it was faster than walking across town.', 'In the Inca empire, runners called chasquis relayed messages across mountain trails, carrying knotted cords called quipu that held numeric and narrative information.', 'In the 1870s, telegrams were delivered by boys in uniforms — the original push notification. Some carried pre-written cards for births, deaths, or dinners.', 'The Inca didn’t have writing, but their communication system was advanced: quipu knots, color coding, and a fully trained network of messengers.', "Some African talking drums were so well-developed that they could imitate phrases like 'the chief is dead, but not the people.' These rhythmic messages could span dozens of miles.", 'The optical telegraph required constant human attention. Operators watched for signals through telescopes, then recreated them for the next station.', 'The first Morse code message over wire, sent in 1844, was 19 characters long. It took over a decade before people trusted the tech.', "The word 'telegraph' means 'writing at a distance' — but early systems didn’t write anything. They clicked, flashed, or flapped their meaning.", "The heliograph used mirrors and sunlight to flash Morse code across mountain ranges. One British officer called it 'wireless telegraphy without the wires or the telegraph.'", 'In 19th-century Paris, semaphore towers sometimes relayed gossip faster than newspapers — they weren’t just for military dispatches.', 'The military used blinker lights on ships — Morse code by lamp — long after radar and radio were invented. Sometimes light was the stealthier option.', 'In WWI, armies used giant kites to lift antennae for better wireless transmission. Some broke free and disappeared into enemy territory.', 'A 19th-century prankster once hijacked a semaphore line by inserting a fake message mid-route. The result? Total confusion at military headquarters.', 'The first message sent across the transatlantic telegraph cable in 1858 took 17 hours to transmit — and the cable failed three weeks later.', "Ancient Persians reportedly used horseback relays so effective that, in Herodotus’s words, 'neither snow, nor rain, nor heat, nor gloom of night' could stop them.", 'Semaphore flags rely not just on position, but on rhythm. Certain sequences require the operator to pause and reset their arms — almost like choreography.', "The term 'telegram' wasn’t coined until years after the technology existed. For a while, people just called it 'the wire' or 'the instrument.'", 'In Victorian London, you could send someone a telegram and have a reply the same afternoon — it was faster than walking across town.', 'Carrier pigeons were trained by releasing them from moving trains — they’d fly home faster than the locomotive could reach the destination.', 'The optical telegraph required constant human attention. Operators watched for signals through telescopes, then recreated them for the next station.', 'In medieval Korea, an intricate system of bonfire towers passed urgent messages between cities using different colors and flame arrangements.'];
+
+    const headline = document.getElementById("headline");
+    function showFact() {
+      const pick = facts[Math.floor(Math.random() * facts.length)];
+      headline.classList.remove("loaded");
+      setTimeout(() => {
+        headline.innerText = pick;
+        headline.classList.add("loaded");
+      }, 300);
+    }
+    showFact();
+    setInterval(showFact, 20000);
+  </script>
+</body>
+</html>
